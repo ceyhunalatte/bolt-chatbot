@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument, User } from '../../models/user.model';
 
-export interface IUserRepository {
+export interface IUsersRepository {
   findById(id: string): Promise<UserDocument | null>;
   findByUsername(username: string): Promise<UserDocument | null>;
   create(data: { username: string; password: string }): Promise<UserDocument>;
@@ -12,7 +12,7 @@ export interface IUserRepository {
 }
 
 @Injectable()
-export class UserRepository implements IUserRepository {
+export class UsersRepository implements IUsersRepository {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
