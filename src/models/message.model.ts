@@ -1,17 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { Document, HydratedDocument } from 'mongoose';
 
 export type MessageDocument = HydratedDocument<Message>;
 
 @Schema()
-export class Message {
-  @Prop()
+export class Message extends Document {
+  @Prop({ type: String })
   sessionId: string;
 
-  @Prop({ default: 0 })
-  answerCount: number;
+  @Prop({ type: String })
+  message: string;
 
-  @Prop({ default: new Date() })
+  @Prop({ type: String, enum: ['SYSTEM', 'CHATBOT', 'USER'] })
+  role: string;
+
+  @Prop({ type: Date, default: new Date() })
   createdAt: Date;
 }
 

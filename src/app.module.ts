@@ -4,8 +4,8 @@ import { SessionsModule } from './modules/session/sessions.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
-import { dbUrl } from './constants';
 import { JwtModule } from '@nestjs/jwt';
+import { MessagesModule } from './modules/messages/messages.module';
 
 @Module({
   imports: [
@@ -19,6 +19,7 @@ import { JwtModule } from '@nestjs/jwt';
     AuthModule,
     UsersModule,
     SessionsModule,
+    MessagesModule,
   ],
   controllers: [],
   providers: [],

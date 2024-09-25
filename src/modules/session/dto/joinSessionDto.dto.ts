@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 
-export class GetSessionDto {
+export class JoinSessionDto {
   @IsString()
   @IsNotEmpty()
-  _id: string;
+  sessionId: string;
 }

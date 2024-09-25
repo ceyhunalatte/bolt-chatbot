@@ -5,16 +5,16 @@ export type SessionDocument = HydratedDocument<Session>;
 
 @Schema()
 export class Session {
-  @Prop()
+  @Prop({ type: String })
   owner: string;
 
-  @Prop()
+  @Prop({ type: String })
   chatId: string;
 
-  @Prop({ default: 0 })
+  @Prop({ type: Number, default: 0 })
   answerCount: number;
 
-  @Prop({ default: new Date() })
+  @Prop({ type: Date, default: new Date() })
   createdAt: Date;
 }
 

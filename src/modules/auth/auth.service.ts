@@ -6,10 +6,18 @@ export interface IAuthService {
   signJwt(payload: Record<string, string | number>): Promise<JWTPayload>;
 }
 
+/**
+ * Service for managing authentication.
+ */
 @Injectable()
 export class AuthService implements IAuthService {
   constructor(private jwtService: JwtService) {}
 
+  /**
+   * Signs a JWT token with the given payload.
+   * @param {Record<string, string | number>} payload
+   * @returns {Promise<JWTPayload>} jwt
+   */
   async signJwt(payload: Record<string, string | number>): Promise<JWTPayload> {
     return { accessToken: await this.jwtService.signAsync(payload) };
   }

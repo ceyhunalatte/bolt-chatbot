@@ -21,6 +21,9 @@ interface IUsersService {
   ): Promise<{ user: User; access: JWTPayload }>;
 }
 
+/**
+ * Service for managing users.
+ */
 @Injectable()
 export class UsersService implements IUsersService {
   constructor(
@@ -28,6 +31,11 @@ export class UsersService implements IUsersService {
     private authService: AuthService,
   ) {}
 
+  /**
+   * With given credentials, logs the user in or creates a user then logs the user in.
+   * @param {CreateOrLoginDto} dto
+   * @returns {User} user
+   */
   async createOrLogin(
     dto: CreateOrLoginDto,
   ): Promise<{ user: User; access: JWTPayload }> {
@@ -36,6 +44,11 @@ export class UsersService implements IUsersService {
     else return await this.create(dto);
   }
 
+  /**
+   * Creates a new user and logs in.
+   * @param {CreateOrLoginDto} dto
+   * @returns {User} user
+   */
   async create(
     dto: CreateOrLoginDto,
   ): Promise<{ user: User; access: JWTPayload }> {
@@ -54,6 +67,14 @@ export class UsersService implements IUsersService {
     };
   }
 
+  /**
+   * Logs the user in.
+   * @param {CreateOrLoginDto} dto
+   * @param {User} user? Found user object if any.
+   * @throws {NotFoundException} If user not found.
+   * @throws {UnauthorizedException} If invalid password.
+   * @returns
+   * */
   async login(
     dto: CreateOrLoginDto,
     user?: User,

@@ -2,34 +2,42 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SessionDocument, Session } from '../../models/session.model';
+import { FindOneByOwnerDto } from './dto/findOneByOwner.dto';
+import { CreateSessionDto } from './dto/createSession.dto';
+import { FindOneByOwnerAndUpdateDto } from './dto/findOneByOwnerAndUpdate.dto';
 
 export interface ISessionsRepository {
-  findById(id: string): Promise<SessionDocument | null>;
-  create(data: { owner: string }): Promise<SessionDocument>;
-  update(id: string, session: Session): Promise<SessionDocument | null>;
-  delete(id: string): Promise<void>;
+  findOneByOwner(dto: FindOneByOwnerDto): Promise<Session | null>;
+  create(dto: CreateSessionDto): Promise<Session>;
+  findOneByOwnerAndUpdate(
+    dto: FindOneByOwnerAndUpdateDto,
+  ): Promise<Session | null>;
 }
 
 @Injectable()
 export class SessionsRepository implements ISessionsRepository {
   constructor(
     @InjectModel(Session.name)
-    private readonly sessionModel: Model<SessionDocument>,
+    private readonly sessionModel: Model<Session>,
   ) {}
 
-  async findById(_id: string): Promise<SessionDocument | null> {
-    return this.sessionModel.findById(_id);
+  async findOneByOwner(dto: FindOneByOwnerDto): Promise<Session | null> {
+    return await this.sessionModel.findOne(dto).lean();
   }
 
-  async create(data: { owner: string }): Promise<SessionDocument> {
-    return this.sessionModel.create(data);
+  async create(dto: CreateSessionDto): Promise<Session> {
+    return await this.sessionModel.create(dto);
   }
 
-  async update(id: string, session: Session): Promise<SessionDocument | null> {
-    return this.sessionModel.findByIdAndUpdate(id, session, { new: true });
-  }
-
-  async delete(id: string): Promise<void> {
-    await this.sessionModel.findByIdAndDelete(id);
+  async findOneByOwnerAndUpdate(
+    dto: FindOneByOwnerAndUpdateDto,
+  ): Promise<Session | null> {
+    return await this.sessionModel.findOneAndUpdate(
+      { owner: dto.owner, _id: dto._id },
+      dto.session,
+      {
+        new: true,
+      },
+    );
   }
 }
