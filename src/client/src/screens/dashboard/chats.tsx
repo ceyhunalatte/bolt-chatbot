@@ -5,9 +5,9 @@ import { useApi } from '../../hooks/useApi';
 import { useSessionContext } from './sessionContext';
 
 export const Chats = () => {
-  const { session, getSession, createSession } = useSessionContext();
+  const { getSession, createSession } = useSessionContext();
   const [sessions, setSessions] = useState<Session[]>([]);
-  const { get, post } = useApi();
+  const { get } = useApi();
   const { logout } = useAuthApi();
 
   useEffect(() => {
@@ -25,11 +25,17 @@ export const Chats = () => {
     window.location.reload();
   }
 
+  async function handleCreateMessage() {
+    const res = await createSession();
+    if (!res) return;
+    setSessions((sessions) => [res, ...sessions]);
+  }
+
   return (
     <div
       style={{ height: '100vh', width: '200px', borderRight: '1px solid #ccc' }}
     >
-      <button onClick={createSession}>new session</button>
+      <button onClick={handleCreateMessage}>new session</button>
       {sessions.map((x) => (
         <div key={x._id}>
           <button onClick={() => getSession(x._id)}>

@@ -9,7 +9,6 @@ export interface IuseSessionWs {
   connect: (session: Session) => void;
   disconnect: () => void;
   sendMessage: (message: string) => void;
-  addMessageListener: (onMessage: (message: Message) => void) => void;
   connected: boolean;
 }
 
@@ -19,20 +18,16 @@ export const useSessionWs = (
   const [session, setSession] = useState<Session | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
   const [ws, setWs] = useState<Socket | null>(null);
-  const emitter = useMemo(() => new EventEmitter(), []);
   const { getToken } = useAccessToken();
 
   useEffect(() => {
     return () => {
-      emitter.removeAllListeners();
       disconnect();
     };
   }, []);
 
   function connect(session: Session) {
-    if (ws) {
-      disconnect();
-    }
+    if (ws) disconnect();
     setSession(session);
     setWs(() => {
       const ws = io('http://localhost:3000/session', {
@@ -63,11 +58,6 @@ export const useSessionWs = (
     });
   }
 
-  function addMessageListener(onMessage: (message: Message) => void) {
-    // console.log('hehehehe');
-    // emitter.addListener('newMessage', (message: Message) => onMessage(message));
-  }
-
   function sendMessage(message: string) {
     if (!ws) return;
     ws.emit('newMessage', { message, sessionId: session!._id });
@@ -87,6 +77,5 @@ export const useSessionWs = (
     disconnect,
     sendMessage,
     connected,
-    addMessageListener,
   };
 };

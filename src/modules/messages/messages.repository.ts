@@ -27,7 +27,7 @@ export class MessagesRepository implements IMessagesRepository {
 
   async getMessagesBySessionId(sessionId: string): Promise<Message[]> {
     return this.messageModel
-      .find({ sessionId })
+      .find({ sessionId, role: { $ne: 'SYSTEM' } })
       .sort({ createdAt: 1 })
       .select('role message sessionId')
       .lean();

@@ -7,36 +7,8 @@ import { useApi } from '../../../hooks/useApi';
 export interface ChatProps {}
 
 export const Chat: React.FC<ChatProps> = () => {
-  const { session, loading } = useSessionContext();
-  const { get } = useApi();
-  const { connected, connect, sendMessage, addMessageListener } =
-    useSessionWs(onMessage);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { session, messages, loading, sendMessage } = useSessionContext();
   const [value, setValue] = useState<string>('');
-
-  useEffect(() => {
-    getMessages();
-  }, [session]);
-
-  function connectToSession() {
-    if (!session) return;
-    connect(session);
-  }
-
-  async function getMessages() {
-    if (!session) return;
-
-    const res = await get('/sessions/messages', { id: session._id });
-    if (!res) return;
-
-    setMessages(res);
-    connectToSession();
-  }
-
-  function onMessage(message: Message) {
-    setMessages((messages) => [...messages, message]);
-  }
-
   return (
     <div>
       {loading ? (
