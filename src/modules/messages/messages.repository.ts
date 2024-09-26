@@ -5,7 +5,8 @@ import { Message, MessageDocument } from 'src/models/message.model'; // Import M
 import { CreateMessageDto } from './dto/createMessage.dto';
 
 export interface IMessagesRepository {
-  createMessage(dto: CreateMessageDto): Promise<Message>;
+  create(dto: CreateMessageDto): Promise<Message>;
+  createMany(dto: CreateMessageDto[]): Promise<Message[]>;
   getMessagesBySessionId(sessionId: string): Promise<Message[]>;
 }
 
@@ -16,11 +17,19 @@ export class MessagesRepository implements IMessagesRepository {
     private readonly messageModel: Model<MessageDocument>,
   ) {}
 
-  async createMessage(dto: CreateMessageDto): Promise<Message> {
+  async create(dto: CreateMessageDto): Promise<Message> {
     return await this.messageModel.create(dto);
   }
 
+  async createMany(dto: CreateMessageDto[]): Promise<Message[]> {
+    return await this.messageModel.insertMany(dto);
+  }
+
   async getMessagesBySessionId(sessionId: string): Promise<Message[]> {
-    return this.messageModel.find({ sessionId }).sort({ createdAt: 1 }).lean();
+    return this.messageModel
+      .find({ sessionId })
+      .sort({ createdAt: 1 })
+      .select('role message sessionId')
+      .lean();
   }
 }

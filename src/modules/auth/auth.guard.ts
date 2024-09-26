@@ -6,24 +6,26 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { Socket } from 'socket.io';
 
 /**
- * Guard for authentication.
+ * Guard for authenticating http requests.
  */
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    const httpRequest = context.switchToHttp().getRequest();
+
+    const token = this.extractTokenFromHeader(httpRequest);
     if (!token) throw new UnauthorizedException();
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
       });
 
-      request['user'] = payload;
+      httpRequest['user'] = payload;
     } catch {
       throw new UnauthorizedException();
     }
@@ -33,5 +35,36 @@ export class AuthGuard implements CanActivate {
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
+  }
+}
+
+/**
+ * Guard for authentication on WebSocket connections.
+ */
+@Injectable()
+export class WsAuthGuard implements CanActivate {
+  constructor(private jwtService: JwtService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const socket = context.switchToWs().getClient<Socket>();
+
+    // Extract token from handshake query (or customize based on your logic)
+    const token = socket.handshake.auth?.token;
+    if (!token) {
+      throw new UnauthorizedException('Missing authorization token');
+    }
+
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET,
+      });
+
+      // Attach payload to the socket (optional)
+      socket.data.user = payload;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid or expired token');
+    }
+
+    return true;
   }
 }

@@ -1,17 +1,14 @@
-import React from 'react';
-import { useAuthApi } from '../auth/useAuthApi';
+import { Chat } from './chat/chat';
+import { Chats } from './chats';
+import { SessionProvider } from './sessionContext';
 
 export const Dashboard = () => {
-  const { logout } = useAuthApi();
-
-  function handleLogout() {
-    logout();
-    window.location.reload();
-  }
   return (
-    <div>
-      <h1>dashboard</h1>
-      <button onClick={handleLogout}>logout</button>
-    </div>
+    <SessionProvider>
+      <div style={{ display: 'flex', flexDirection: 'row', width: '100vw' }}>
+        <Chats />
+        <Chat />
+      </div>
+    </SessionProvider>
   );
 };

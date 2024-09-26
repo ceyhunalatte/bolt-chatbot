@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from './modules/users/users.module';
-import { SessionsModule } from './modules/session/sessions.module';
+import { SessionsModule } from './modules/sessions/sessions.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
@@ -18,11 +18,11 @@ import { MessagesModule } from './modules/messages/messages.module';
     }),
     AuthModule,
     UsersModule,
-    SessionsModule,
     MessagesModule,
+    SessionsModule,
   ],
   controllers: [],
   providers: [],
-  exports: [AuthModule],
+  exports: [],
 })
 export class AppModule {}

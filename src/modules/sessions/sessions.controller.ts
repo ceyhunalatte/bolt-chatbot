@@ -14,6 +14,8 @@ import { AuthGuard } from '../auth/auth.guard';
 import { Session } from 'src/models/session.model';
 import { CreateSessionDto } from './dto/createSession.dto';
 import { FindOneByOwnerDto } from './dto/findOneByOwner.dto';
+import { chatHistoryItemProps } from '../llm/llm.service';
+import { MessagesService } from '../messages/messages.service';
 
 interface ISessionsController {
   create: (request: { user: { id: string } }) => Promise<Session>;
@@ -23,20 +25,27 @@ interface ISessionsController {
     },
     query: { id: string },
   ) => Promise<Session>;
+  getMessages: (
+    query: { id: string },
+    request: {
+      user: { id: string };
+    },
+  ) => Promise<chatHistoryItemProps[]>;
 }
 
+@UseGuards(AuthGuard)
 @Controller('api/sessions')
 export class SessionsController implements ISessionsController {
-  constructor(private readonly sessionService: SessionsService) {}
+  constructor(
+    private sessionService: SessionsService,
+    private messagesService: MessagesService,
+  ) {}
 
-  @UseGuards(AuthGuard)
   @Post('create')
   create(@Request() request: { user: { id: string } }): Promise<Session> {
-    const dto: CreateSessionDto = { owner: request.user.id };
-    return this.sessionService.createSession(dto);
+    return this.sessionService.createSession({ owner: request.user.id });
   }
 
-  @UseGuards(AuthGuard)
   @Get()
   get(
     @Request() request: { user: { id: string } },
@@ -47,5 +56,20 @@ export class SessionsController implements ISessionsController {
       _id: query.id,
     };
     return this.sessionService.getSession(dto);
+  }
+
+  @Get('/all')
+  getSessions(
+    @Request() request: { user: { id: string } },
+  ): Promise<Session[]> {
+    return this.sessionService.getManyByOwner({ owner: request.user.id });
+  }
+
+  @Get('/messages')
+  getMessages(
+    @Query() query: { id: string },
+    @Request() request: { user: { id: string } },
+  ): Promise<chatHistoryItemProps[]> {
+    return this.messagesService.getMessagesBySessionId(query.id);
   }
 }

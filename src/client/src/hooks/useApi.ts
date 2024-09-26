@@ -3,24 +3,24 @@ import axios, { AxiosInstance } from 'axios';
 import { useAccessToken } from './useAccessToken';
 
 export interface IuseApi {
-  get: (endpoint: string, params: Record<string, any>) => Promise<any>;
-  post: (endpoint: string, body: Record<string, any>) => Promise<any>;
+  get: (endpoint: string, params?: Record<string, any>) => Promise<any>;
+  post: (endpoint: string, body?: Record<string, any>) => Promise<any>;
 }
 
 export const useApi = (): IuseApi => {
-  const { token } = useAccessToken();
-  const httpClient: AxiosInstance = useMemo(() => buildClient(), [token]);
+  const { getToken } = useAccessToken();
 
   function buildClient(): AxiosInstance {
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const headers = getToken() ? { Authorization: `Bearer ${getToken()}` } : {};
     return axios.create({ baseURL: process.env.REACT_APP_API_URL, headers });
   }
 
   async function get(
     endpoint: string,
-    params: Record<string, any>,
+    params?: Record<string, any>,
   ): Promise<any> {
     try {
+      const httpClient = buildClient();
       const response = await httpClient.get(
         endpoint + buildQueryParams(params),
       );
@@ -33,9 +33,10 @@ export const useApi = (): IuseApi => {
 
   async function post(
     endpoint: string,
-    body: Record<string, any>,
+    body?: Record<string, any>,
   ): Promise<any> {
     try {
+      const httpClient = buildClient();
       const response = await httpClient.post(endpoint, body);
       return response.data;
     } catch (error: any) {

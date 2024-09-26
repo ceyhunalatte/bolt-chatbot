@@ -5,12 +5,14 @@ import { SessionsGateway } from './sessions.gateway';
 import { SessionsRepository } from './sessions.repository';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Session, SessionSchema } from 'src/models/session.model';
+import { MessagesModule } from '../messages/messages.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Session.name, schema: SessionSchema }]),
+    MessagesModule,
   ],
   controllers: [SessionsController],
-  providers: [SessionsService, SessionsRepository, SessionsGateway],
+  providers: [SessionsGateway, SessionsRepository, SessionsService],
 })
 export class SessionsModule {}

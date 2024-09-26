@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { Document, HydratedDocument } from 'mongoose';
 
 export type SessionDocument = HydratedDocument<Session>;
 
 @Schema()
-export class Session {
+export class Session extends Document {
   @Prop({ type: String })
   owner: string;
 
@@ -12,7 +12,14 @@ export class Session {
   chatId: string;
 
   @Prop({ type: Number, default: 0 })
-  answerCount: number;
+  step: number;
+
+  @Prop({
+    type: String,
+    default: 'active',
+    enum: ['active', 'generating', 'finisihed'],
+  })
+  status: string;
 
   @Prop({ type: Date, default: new Date() })
   createdAt: Date;
