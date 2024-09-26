@@ -20,6 +20,7 @@ export class AuthGuard implements CanActivate {
 
     const token = this.extractTokenFromHeader(httpRequest);
     if (!token) throw new UnauthorizedException();
+
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
@@ -29,6 +30,7 @@ export class AuthGuard implements CanActivate {
     } catch {
       throw new UnauthorizedException();
     }
+
     return true;
   }
 
@@ -39,7 +41,7 @@ export class AuthGuard implements CanActivate {
 }
 
 /**
- * Guard for authentication on WebSocket connections.
+ * Guard for authenticating websocket connections.
  */
 @Injectable()
 export class WsAuthGuard implements CanActivate {
@@ -48,7 +50,7 @@ export class WsAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const socket = context.switchToWs().getClient<Socket>();
 
-    // Extract token from handshake query (or customize based on your logic)
+    // Extract token from handshake query
     const token = socket.handshake.auth?.token;
     if (!token) {
       throw new UnauthorizedException('Missing authorization token');
@@ -59,7 +61,6 @@ export class WsAuthGuard implements CanActivate {
         secret: process.env.JWT_SECRET,
       });
 
-      // Attach payload to the socket (optional)
       socket.data.user = payload;
     } catch (error) {
       throw new UnauthorizedException('Invalid or expired token');

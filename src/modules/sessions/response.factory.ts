@@ -1,11 +1,7 @@
-/**
- * Chatting service bound to a session
- */
-
 import { Session } from 'src/models/session.model';
 import { chatHistoryItemProps, LlmService } from 'src/modules/llm/llm.service';
 
-const questions = [
+export const questions = [
   'What is your favorite breed of cat, and why?',
   'How do you think cats communicate with their owners?',
   'Have you ever owned a cat? If so, what was their name and personality like?',
@@ -18,6 +14,10 @@ const questions = [
   'How would you describe the relationship between humans and cats in three words?',
 ];
 
+/**
+ * ResponseFactory class is responsible for generating responses
+ * based on the current session and chat history.
+ */
 export class ResponseFactory extends LlmService {
   private session: Session;
   private chatHistory: chatHistoryItemProps[];

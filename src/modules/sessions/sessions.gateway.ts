@@ -17,21 +17,31 @@ interface SocketWithUser extends Socket {
   };
 }
 
+export interface ISessionGateway {}
+
 /**
  * Session socket service as gateway.
  */
 @WebSocketGateway({ cors: '*:*', namespace: 'session' })
 @UseGuards(WsAuthGuard)
-export class SessionsGateway {
+export class SessionsGateway implements ISessionGateway {
   @WebSocketServer()
   server: Server;
 
   constructor(private sessionsService: SessionsService) {}
 
+  /**
+   * Add your connection handlers here.
+   */
   handleConnection(client: Socket) {
     console.log('client connected');
   }
 
+  /**
+   * Join a session with a bot.
+   * @param {Socket} client
+   * @param {JoinSessionDto} dto
+   */
   @SubscribeMessage('joinSession')
   handleJoinRoom(
     @ConnectedSocket() client: Socket,
@@ -43,6 +53,12 @@ export class SessionsGateway {
       .emit('joinedToSession', `Succesfully joined to ${dto.sessionId}`);
   }
 
+  /**
+   * Sends a new message to the session room. Also listens to follow ups
+   * of the event. Handles the bot response generation.
+   * @param {Socket} client
+   * @param {string} data
+   */
   @SubscribeMessage('newMessage')
   async handleMessage(
     @ConnectedSocket() client: SocketWithUser,
@@ -55,14 +71,11 @@ export class SessionsGateway {
       role: 'USER',
     });
 
-    if (!message) return;
     this.server.to(data.sessionId).emit('newMessage', message);
-
-    const response = await this.sessionsService.respondToUser(data.sessionId);
+    if (message.status === 'finished') return;
+    const response = await this.sessionsService.generateBotResponse(
+      data.sessionId,
+    );
     this.server.to(data.sessionId).emit('newMessage', response);
-  }
-
-  emitMessage(roomId: string, type: string, data: Record<string, any>) {
-    this.server.to(roomId).emit(type, data);
   }
 }

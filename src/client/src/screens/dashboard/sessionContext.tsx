@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { useApi } from '../../hooks/useApi';
-import { Message, Session } from '../../types';
+import { ISessionStatus, Message, Session } from '../../types';
 import { useSessionWs } from './chat/usSessionWs';
 
 const SessionContext = createContext<{
@@ -24,6 +24,7 @@ const SessionContext = createContext<{
  */
 const SessionProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { connected, connect, sendMessage } = useSessionWs(onMessage);
@@ -48,6 +49,7 @@ const SessionProvider = ({ children }: { children: React.ReactNode }) => {
     const res = await get('/sessions', { id });
     if (!res) return setLoading(false);
     setSession(res);
+    setStatus(res.status);
     await getMessages();
     setLoading(false);
 
@@ -64,8 +66,19 @@ const SessionProvider = ({ children }: { children: React.ReactNode }) => {
     connect(session);
   }
 
-  function onMessage(message: Message) {
-    setMessages((messages) => [...messages, message]);
+  function onMessage(payload: ISessionStatus) {
+    const { status, message } = payload;
+
+    console.log(
+      '---------------------------------------------------------------------------------',
+    );
+    console.log(payload);
+    console.log(
+      '---------------------------------------------------------------------------------',
+    );
+
+    if (message) setMessages((messages) => [...messages, message]);
+    if (status) setStatus(status);
   }
 
   return (

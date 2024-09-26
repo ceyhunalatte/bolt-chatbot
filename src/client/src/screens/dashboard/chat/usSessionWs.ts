@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Message, Session } from '../../../types';
+import { useEffect, useState } from 'react';
+import { ISessionStatus, Message, Session } from '../../../types';
 import { io, Socket } from 'socket.io-client';
 import { useAccessToken } from '../../../hooks/useAccessToken';
-import EventEmitter from 'events';
 
 export interface IuseSessionWs {
   ws: Socket | null;
@@ -13,7 +12,7 @@ export interface IuseSessionWs {
 }
 
 export const useSessionWs = (
-  onMessage: (message: Message) => void,
+  onMessage: (payload: ISessionStatus) => void,
 ): IuseSessionWs => {
   const [session, setSession] = useState<Session | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
@@ -42,8 +41,8 @@ export const useSessionWs = (
         console.log('connected');
       });
 
-      ws.on('newMessage', (message: Message) => {
-        onMessage(message);
+      ws.on('newMessage', (payload: ISessionStatus) => {
+        onMessage(payload);
       });
 
       ws.on('error', (error) => {

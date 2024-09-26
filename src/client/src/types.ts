@@ -7,6 +7,7 @@ export type JWTPayload = {
 export type Session = {
   _id: string;
   createdAt: Date;
+  status: string;
 };
 export type Message = {
   _id: string;
@@ -14,3 +15,7 @@ export type Message = {
   role: string;
   message: string;
 };
+export interface ISessionStatus {
+  status?: string;
+  message?: Message;
+}

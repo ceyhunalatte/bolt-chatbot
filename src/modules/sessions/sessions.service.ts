@@ -4,13 +4,13 @@ import { Session } from 'src/models/session.model';
 import { CreateSessionDto } from './dto/createSession.dto';
 import { FindOneByOwnerDto } from './dto/findOneByOwner.dto';
 import { FindOneByOwnerAndUpdateDto } from './dto/findOneByOwnerAndUpdate.dto';
-import { ResponseFactory } from '../chat/chat.service';
+import { questions, ResponseFactory } from './response.factory';
 import { MessagesService } from '../messages/messages.service';
 import { Message } from 'src/models/message.model';
 
 export interface ISessionStatus {
-  status: string;
-  message: string;
+  status?: string;
+  message?: Message;
 }
 
 export interface ISessionservice {
@@ -22,8 +22,8 @@ export interface ISessionservice {
     sessionId: string;
     owner: string;
     role: string;
-  }): Promise<Message>;
-  respondToUser(sessionId: string): Promise<Message>;
+  }): Promise<ISessionStatus>;
+  generateBotResponse(sessionId: string): Promise<ISessionStatus>;
 }
 
 /**
@@ -63,7 +63,7 @@ export class SessionsService implements ISessionservice {
       },
     ]);
 
-    await this.respondToUser(session._id.toString());
+    await this.generateBotResponse(session._id.toString());
 
     return session;
   }
@@ -77,6 +77,11 @@ export class SessionsService implements ISessionservice {
     return await this.sessionsRepository.findOneByOwner(dto);
   }
 
+  /**
+   * Gets many sessions by owner.
+   * @param {FindOneByOwnerDto} dto
+   * @returns {Session[]} sessions
+   */
   async getManyByOwner(dto: { owner: string }): Promise<Session[]> {
     return await this.sessionsRepository.findMany(dto);
   }
@@ -92,6 +97,11 @@ export class SessionsService implements ISessionservice {
     return await this.sessionsRepository.findOneByOwnerAndUpdate(dto);
   }
 
+  /**
+   * Updates a session by id.
+   * @param {FindOneByOwnerAndUpdateDto} dto
+   * @returns {Session} session
+   */
   async updateById(dto: {
     _id: string;
     session: Record<string, any>;
@@ -99,18 +109,30 @@ export class SessionsService implements ISessionservice {
     return this.sessionsRepository.updateById(dto);
   }
 
+  /**
+   * User sends a message.
+   * @param data
+   * @returns Created message.
+   */
   async sendMessage(data: {
     message: string;
     sessionId: string;
     owner: string;
     role: string;
-  }): Promise<Message> {
+  }): Promise<ISessionStatus> {
     const session = await this.getSession({
       owner: data.owner,
       _id: data.sessionId,
     });
-    if (!session || ['generating', 'finished'].includes(session.status)) return;
-    return await this.messagesService.createMessage(data);
+    if (!session || ['generating', 'finished'].includes(session.status)) {
+      return {
+        status: session.status,
+      };
+    }
+
+    return {
+      message: await this.messagesService.createMessage(data),
+    };
   }
 
   /**
@@ -118,7 +140,7 @@ export class SessionsService implements ISessionservice {
    * @param sessionId
    * @returns
    */
-  async respondToUser(sessionId: string): Promise<Message> {
+  async generateBotResponse(sessionId: string): Promise<ISessionStatus> {
     const [session, chatHistory] = await Promise.all([
       this.updateById({
         _id: sessionId,
@@ -126,10 +148,15 @@ export class SessionsService implements ISessionservice {
       }),
       this.messagesService.getMessagesBySessionId(sessionId),
     ]);
-    if (!session || session.status === 'finished') return;
+    if (!session || session.status === 'finished') {
+      return {
+        status: session.status,
+      };
+    }
 
     const responseFactory = new ResponseFactory(session, chatHistory);
     const response = await responseFactory.generate();
+    const shouldFinish = session.step + 1 >= questions.length;
 
     const [newMessage] = await Promise.all([
       this.messagesService.createMessage({
@@ -142,11 +169,14 @@ export class SessionsService implements ISessionservice {
         _id: sessionId,
         session: {
           step: session.step + 1,
-          status: session.step + 1 === 9 ? 'finished' : 'active',
+          status: shouldFinish ? 'finished' : 'active',
         },
       }),
     ]);
 
-    return newMessage;
+    return {
+      status: shouldFinish && 'finished',
+      message: newMessage,
+    };
   }
 }
