@@ -19,6 +19,6 @@ export class AuthService implements IAuthService {
    * @returns {Promise<JWTPayload>} jwt
    */
   async signJwt(payload: Record<string, string | number>): Promise<JWTPayload> {
-    return { accessToken: await this.jwtService.signAsync(payload) };
+    return { token: await this.jwtService.signAsync(payload) };
   }
 }

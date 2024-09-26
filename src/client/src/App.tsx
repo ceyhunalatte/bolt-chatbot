@@ -1,33 +1,23 @@
-import React, { useEffect } from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { io } from 'socket.io-client';
+import { Dashboard } from './screens/dashboard/page';
+import { Auth } from './screens/auth/auth';
+import { useAccessToken } from './hooks/useAccessToken';
+import { useMemo } from 'react';
 
 function App() {
-  // const socket = io('localhost:3000/session', { auth: { token: '123' } });
-  // useEffect(() => {
-  //   connect();
-  // }, []);
-
-  // function connect() {
-  //   socket.on('connect', () => {
-  //     console.log('connected');
-  //   });
-
-  //   socket.on('error', (error) => {
-  //     console.log('error', error);
-  //   });
-
-  //   socket.on('joinedToSession', (m: any) => console.log(m));
-  // }
-
-  // function joinSession() {
-  //   socket.emit('joinSession', { sessionId: '123' });
-  // }
+  const { getToken } = useAccessToken();
+  const token = useMemo(() => getToken(), []);
 
   return (
-    <div className="App">
-      <h1>Hello, world!</h1>
+    <div
+      className="App"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      {token ? <Dashboard /> : <Auth />}
     </div>
   );
 }

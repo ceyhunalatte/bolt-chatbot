@@ -1,13 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { CohereClient } from 'cohere-ai';
+import { ValidationPipe } from '@nestjs/common';
 
 // const cohere = new CohereClient({
 //   token: process.env.COHERE_API_SECRET,
 // });
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: { origin: ['http://localhost:3001'] },
+  });
+  app.useGlobalPipes(new ValidationPipe({ stopAtFirstError: true }));
   await app.listen(3000);
 
   // const questions = [
