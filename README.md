@@ -1,43 +1,26 @@
-## Table of Contents  
-1. [Headers](#headers)  
-[Description](#description)  
-2. [Headers](#headers)  
- [Description](#description)  
+## Summary
+A chatbot application asking the user about cats. Architecture built with NestJS, ReactJS and MongoDB with heavy leaning on service infrastructure.
 
+## Table of contents 
+1. [Installation](#installation)  
+1.1 [Back-end](#back-end-installation)  
+1.2 [Front-end](#front-end-installation)  
+2. [Response generation with LLM](#response-generation-with-llm)  
+3. [Real time communications](#real-time-communications)
+4. [Authentication](#authentication) 
+5. [Validation](#validation)
 
-## Headers
+## Installation
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+### Back-end installation
+Created with [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
+#### Install dependencies
 ```bash
 $ yarn install
 ```
 
-## Compile and run the project
+#### Compile and run the project
 
 ```bash
 # development
@@ -50,41 +33,32 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
-## Run tests
+### Front-end installation
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+#### Install dependencies
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+$ yarn install
 ```
 
-## Resources
+#### Compile and run the project
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+# development
+$ yarn start
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# build
+$ yarn build
+```
 
-## Support
+## Response generation with LLM
+In order to create a lively experience when a user interacts with the bot, we leveraged the power of Cohere AI(free plan). The responses are generated depending on the chat step(0-9-finished).
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Real time communications
+Real-time commumications are handled with socket.io and socket.io-client libraries, message and connection handling are handled by SessionGateway service on server, and useSessionWs on client. Authentication handled with a top level AuthGuard on SessionGateway.
 
-## Stay in touch
+## Authentication
+Authentication methods are handled by AuthGuards on top or method level, both for socket connections and REST APIs.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Validation
+Using the class-validators library and a top level validation pipeline, we handle data validations with DTO object classes, handling the process and errors via props before accessing the method definition.
