@@ -5,6 +5,17 @@ This is a mono-repo which contains bot the front-end and back-end code.
 
 Navigate to /src/client to review front-end content.
 
+### To run faster
+TL:DR run the app: 
+
+Copy the .env variables to root and src/client folders, run the following command within the root folder.
+
+[Visit the local app](http://localhost:3000)
+
+```bash
+$ yarn && cd src/client && yarn && yarn build && cd .. && yarn start
+```
+
 ## Table of contents 
 1. [Installation](#installation)  
 1.1 [Back-end](#back-end-installation)  
