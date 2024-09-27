@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { IuseAuthApi, useAuthApi } from './useAuthApi';
+import { Button, Input, Flex, Typography } from 'antd';
 
 export const Auth: React.FC = () => {
   const { login }: IuseAuthApi = useAuthApi();
@@ -14,33 +15,57 @@ export const Auth: React.FC = () => {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '400px',
-        alignSelf: 'center',
-      }}
-    >
-      <h1>Auth</h1>
-      <input
-        placeholder="username"
-        value={username}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setUsername(e.target.value)
-        }
-      />
-      <input
-        placeholder="password"
-        type="password"
-        value={password}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setPassword(e.target.value)
-        }
-      />
+    <Flex>
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: '400px',
+          alignSelf: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Typography.Title style={{ marginTop: 0 }} level={3}>
+          Welcome to CatBot
+        </Typography.Title>
 
-      <button type="submit">login</button>
-    </form>
+        <Input
+          placeholder="Username"
+          value={username}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setUsername(e.target.value)
+          }
+        />
+
+        <Input
+          placeholder="Password"
+          type="password"
+          value={password}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setPassword(e.target.value)
+          }
+          style={{ marginTop: '8px' }}
+        />
+
+        <Button
+          htmlType="submit"
+          type="primary"
+          style={{ marginTop: '8px', width: '100%' }}
+        >
+          Log in
+        </Button>
+
+        <Flex style={{ width: '80%' }}>
+          <Typography.Text
+            type="secondary"
+            style={{ marginTop: '8px', lineHeight: '16px' }}
+          >
+            This step will create an account for you if the username doesn't
+            exists.
+          </Typography.Text>
+        </Flex>
+      </form>
+    </Flex>
   );
 };

@@ -11,6 +11,7 @@ import { Message } from 'src/models/message.model';
 export interface ISessionStatus {
   status?: string;
   message?: Message;
+  error?: string;
 }
 
 export interface ISessionservice {
@@ -132,6 +133,7 @@ export class SessionsService implements ISessionservice {
 
     return {
       message: await this.messagesService.createMessage(data),
+      status: 'generating',
     };
   }
 
@@ -154,8 +156,23 @@ export class SessionsService implements ISessionservice {
       };
     }
 
-    const responseFactory = new ResponseFactory(session, chatHistory);
-    const response = await responseFactory.generate();
+    let response: string;
+    try {
+      const responseFactory = new ResponseFactory(session, chatHistory);
+      response = await responseFactory.generate();
+    } catch (error) {
+      this.updateById({
+        _id: sessionId,
+        session: {
+          status: 'active',
+        },
+      });
+      return {
+        error:
+          'uh oh! we have reached the rate limit! please wait around a minute in order to continue using the bot',
+      };
+    }
+
     const shouldFinish = session.step + 1 >= questions.length;
 
     const [newMessage] = await Promise.all([
@@ -175,7 +192,7 @@ export class SessionsService implements ISessionservice {
     ]);
 
     return {
-      status: shouldFinish && 'finished',
+      status: shouldFinish ? 'finished' : 'active',
       message: newMessage,
     };
   }

@@ -5,6 +5,7 @@ import { useSessionWs } from './chat/usSessionWs';
 
 const SessionContext = createContext<{
   session: Session | null;
+  status: string | null;
   loading: boolean;
   messages: Message[];
   sendMessage: (message: string) => void;
@@ -12,6 +13,7 @@ const SessionContext = createContext<{
   createSession: () => Promise<Session | null>;
 }>({
   session: null,
+  status: '',
   loading: true,
   messages: [],
   sendMessage: (message: string) => null,
@@ -24,10 +26,10 @@ const SessionContext = createContext<{
  */
 const SessionProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
-  const [status, setStatus] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const { connected, connect, sendMessage } = useSessionWs(onMessage);
+  const { connect, sendMessage } = useSessionWs(onMessage);
   const { post, get } = useApi();
 
   useEffect(() => {
@@ -67,15 +69,8 @@ const SessionProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   function onMessage(payload: ISessionStatus) {
-    const { status, message } = payload;
-
-    console.log(
-      '---------------------------------------------------------------------------------',
-    );
-    console.log(payload);
-    console.log(
-      '---------------------------------------------------------------------------------',
-    );
+    const { status, message, error } = payload;
+    if (error) return alert(error);
 
     if (message) setMessages((messages) => [...messages, message]);
     if (status) setStatus(status);
@@ -85,6 +80,7 @@ const SessionProvider = ({ children }: { children: React.ReactNode }) => {
     <SessionContext.Provider
       value={{
         session,
+        status,
         sendMessage,
         messages,
         loading,

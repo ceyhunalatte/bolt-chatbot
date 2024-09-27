@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthApi } from '../auth/useAuthApi';
 import { Session } from '../../types';
 import { useApi } from '../../hooks/useApi';
 import { useSessionContext } from './sessionContext';
+import { Button, List } from 'antd';
 
 export const Chats = () => {
   const { getSession, createSession } = useSessionContext();
@@ -17,6 +18,9 @@ export const Chats = () => {
       const res = await get('/sessions/all');
       if (!res) return;
       setSessions(res);
+
+      if (!res.length) return handleCreateSession();
+      getSession(res[0]._id);
     }
   }, []);
 
@@ -25,7 +29,7 @@ export const Chats = () => {
     window.location.reload();
   }
 
-  async function handleCreateMessage() {
+  async function handleCreateSession() {
     const res = await createSession();
     if (!res) return;
     setSessions((sessions) => [res, ...sessions]);
@@ -33,17 +37,29 @@ export const Chats = () => {
 
   return (
     <div
-      style={{ height: '100vh', width: '200px', borderRight: '1px solid #ccc' }}
+      style={{
+        minHeight: '100vh',
+        height: '100vh',
+        width: '220px',
+        minWidth: '220px',
+        borderRight: '1px solid #ccc',
+        overflowX: 'scroll',
+      }}
     >
-      <button onClick={handleCreateMessage}>new session</button>
-      {sessions.map((x) => (
-        <div key={x._id}>
-          <button onClick={() => getSession(x._id)}>
-            <p key={x._id}>{x._id}</p>
-          </button>
-        </div>
-      ))}
-      <button onClick={handleLogout}>logout</button>
+      <Button onClick={handleCreateSession}>New session</Button>
+      <List
+        style={{}}
+        itemLayout="horizontal"
+        dataSource={sessions}
+        renderItem={(item, index) => (
+          <List.Item>
+            <List.Item.Meta
+              title={<a onClick={() => getSession(item._id)}>{item._id}</a>}
+            />
+          </List.Item>
+        )}
+      />
+      <Button onClick={handleLogout}>Logout</Button>
     </div>
   );
 };

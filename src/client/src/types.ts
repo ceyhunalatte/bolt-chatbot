@@ -18,4 +18,5 @@ export type Message = {
 export interface ISessionStatus {
   status?: string;
   message?: Message;
+  error?: string;
 }
