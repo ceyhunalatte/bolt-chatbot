@@ -8,13 +8,28 @@ Navigate to /src/client to review front-end content.
 ### To run faster
 TL:DR run the app: 
 
-Copy the .env variables to root and src/client folders, run the following command within the root folder.
+Copy the .env variables to root and src/client folders, run the following command within the root folder. You need to have MongoDB running.
 
-[Visit the local app](http://localhost:3000)
+##### Important: If you don't have the necessary .env files, copying below variables will help you get started.
 
+server .env - cohere secret will be removed and revoked
+```bash
+DB_URL=mongodb://127.0.0.1:27017/bolt-chatbot
+JWT_SECRET=someSecret
+COHERE_API_SECRET=V8eMTBvr4ycdaCvIArHLBVqDxanCE2Toj3WYgWm7
+```
+
+client .env:
+```bash
+REACT_APP_API_URL=http://localhost:3000/api
+```
+
+Run the below command within the root folder.
 ```bash
 $ yarn && cd src/client && yarn && yarn build && cd .. && yarn start
 ```
+
+Review the app, [visit the local app](http://localhost:3000)
 
 ## Table of contents 
 1. [Installation](#installation)  
