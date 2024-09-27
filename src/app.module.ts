@@ -6,10 +6,15 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MessagesModule } from './modules/messages/messages.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'src/client/build'),
+    }),
     MongooseModule.forRoot(process.env.DB_URL),
     JwtModule.register({
       global: true,
