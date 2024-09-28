@@ -180,7 +180,7 @@ export class SessionsService implements ISessionservice {
         sessionId,
         message: response,
         role: 'CHATBOT',
-        owner: '66f3d6443fda4a7b27adfed5',
+        owner: session.owner,
       }),
       this.updateById({
         _id: sessionId,
