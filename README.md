@@ -5,12 +5,12 @@ This is a mono-repo which contains bot the front-end and back-end code.
 
 Navigate to /src/client to review front-end content.
 
-### TL;DR run the app:
+### TL;DR Run Rhe App
 Copy the .env variables to root and src/client folders, run the following command within the root folder. You need to have MongoDB running.
 
 ##### Important: If you don't have the necessary .env files, copying below variables will help you get started. Please get a Cohere API key though.
 
-server .env
+server .env:
 ```bash
 DB_URL=mongodb://127.0.0.1:27017/bolt-chatbot
 JWT_SECRET=someSecret
