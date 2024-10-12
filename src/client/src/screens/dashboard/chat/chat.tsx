@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useSessionContext } from '../sessionContext';
+import { useChatContext } from '../chatContext';
 import { Button, Flex, Input } from 'antd';
 
 export interface ChatProps {}
 
 export const Chat: React.FC<ChatProps> = () => {
-  const { status, messages, loading, sendMessage } = useSessionContext();
+  const { status, messages, loading, sendMessage } = useChatContext();
   const [value, setValue] = useState<string>('');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 

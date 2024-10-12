@@ -1,26 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useAuthApi } from '../auth/useAuthApi';
-import { Session } from '../../types';
+import { Chat } from '../../types';
 import { useApi } from '../../hooks/useApi';
-import { useSessionContext } from './sessionContext';
+import { useChatContext } from './chatContext';
 import { Button, List } from 'antd';
 
 export const Chats = () => {
-  const { getSession, createSession } = useSessionContext();
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const { getChat, createChat } = useChatContext();
+  const [chats, setChats] = useState<Chat[]>([]);
   const { get } = useApi();
   const { logout } = useAuthApi();
 
   useEffect(() => {
-    getSessions();
+    getChats();
 
-    async function getSessions() {
-      const res = await get('/sessions/all');
+    async function getChats() {
+      const res = await get('/chats/all');
       if (!res) return;
-      setSessions(res);
+      setChats(res);
 
-      if (!res.length) return handleCreateSession();
-      getSession(res[0]._id);
+      if (!res.length) return handleCreateChat();
+      getChat(res[0]._id);
     }
   }, []);
 
@@ -29,10 +29,10 @@ export const Chats = () => {
     window.location.reload();
   }
 
-  async function handleCreateSession() {
-    const res = await createSession();
+  async function handleCreateChat() {
+    const res = await createChat();
     if (!res) return;
-    setSessions((sessions) => [res, ...sessions]);
+    setChats((chats) => [res, ...chats]);
   }
 
   return (
@@ -46,15 +46,15 @@ export const Chats = () => {
         overflowX: 'scroll',
       }}
     >
-      <Button onClick={handleCreateSession}>New session</Button>
+      <Button onClick={handleCreateChat}>New chat</Button>
       <List
         style={{}}
         itemLayout="horizontal"
-        dataSource={sessions}
+        dataSource={chats}
         renderItem={(item, index) => (
           <List.Item>
             <List.Item.Meta
-              title={<a onClick={() => getSession(item._id)}>{item._id}</a>}
+              title={<a onClick={() => getChat(item._id)}>{item._id}</a>}
             />
           </List.Item>
         )}

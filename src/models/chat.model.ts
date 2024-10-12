@@ -3,7 +3,7 @@ import { Document, HydratedDocument } from 'mongoose';
 
 export type ChatDocument = HydratedDocument<Chat>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Chat extends Document {
   @Prop({ type: String })
   owner: string;
@@ -20,9 +20,6 @@ export class Chat extends Document {
     enum: ['active', 'generating', 'finisihed'],
   })
   status: string;
-
-  @Prop({ type: Date, default: new Date() })
-  createdAt: Date;
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);

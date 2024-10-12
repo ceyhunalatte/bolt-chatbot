@@ -28,8 +28,8 @@ export class MessagesService implements IMessagesService {
 
   async getMany(dto: GetMessages): Promise<Message[]> {
     return await this.messageModel.find({
-      owner: dto.user.id,
       role: { $ne: ChatRoles.SYSTEM },
+      chatId: dto.chatId,
     });
   }
 }

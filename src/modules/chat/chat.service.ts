@@ -45,8 +45,8 @@ export class ChatService implements IChatService {
 
   /**
    * Creates a new chat with default messages.
-   * @param {string} owner Owner id of the document.
-   * @returns {Chat} New chat.
+   * @param {CreateChat} dto
+   * @returns {Chat}
    */
   async create(dto: CreateChat): Promise<Chat> {
     const chat = await this.chatModel.create({
@@ -92,7 +92,9 @@ export class ChatService implements IChatService {
    * @returns {Chat[]}
    */
   async getMany(dto: GetChats): Promise<Chat[]> {
-    return await this.chatModel.find({ owner: dto.user.id });
+    return await this.chatModel
+      .find({ owner: dto.user.id })
+      .sort({ updatedAt: -1 });
   }
 
   /**

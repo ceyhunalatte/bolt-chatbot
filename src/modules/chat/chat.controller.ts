@@ -21,7 +21,7 @@ import { GetMessages } from '../messages/dto/getMessages';
 
 interface IChatController {
   create: (body: CreateChat) => Promise<Chat>;
-  get: (body: GetChat) => Promise<Chat>;
+  get: (query: GetChat) => Promise<Chat>;
   getMany: (query: GetChats) => Promise<Chat[]>;
   getMessages: (query: GetMessages) => Promise<Message[]>;
 }
@@ -40,11 +40,10 @@ export class ChatController implements IChatController {
   }
 
   @Get()
-  get(@Body() body: GetChat): Promise<Chat> {
-    return this.chatService.get(body);
+  get(@Query() query: GetChat): Promise<Chat> {
+    return this.chatService.get(query);
   }
 
-  @UseGuards(AuthGuard)
   @Get('/all')
   getMany(@Query() query: GetChats): Promise<Chat[]> {
     return this.chatService.getMany(query);
