@@ -6,7 +6,9 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { request } from 'http';
 import { Socket } from 'socket.io';
+import { JWTPayload } from 'src/types';
 
 /**
  * Guard for authenticating http requests.
@@ -16,15 +18,23 @@ export class AuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const httpRequest = context.switchToHttp().getRequest();
+    const httpRequest = context.switchToHttp().getRequest<Request>();
 
     const token = this.extractTokenFromHeader(httpRequest);
     if (!token) throw new UnauthorizedException();
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload: JWTPayload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
       });
+
+      const requestPayloadKey =
+        Object.keys(httpRequest.route.methods)[0] === 'get' ? 'query' : 'body';
+
+      httpRequest[requestPayloadKey] = {
+        ...httpRequest[requestPayloadKey],
+        user: payload,
+      };
 
       httpRequest['user'] = payload;
     } catch {

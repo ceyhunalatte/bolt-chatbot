@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument } from 'mongoose';
 
-export type SessionDocument = HydratedDocument<Session>;
+export type ChatDocument = HydratedDocument<Chat>;
 
 @Schema()
-export class Session extends Document {
+export class Chat extends Document {
   @Prop({ type: String })
   owner: string;
 
@@ -25,4 +25,4 @@ export class Session extends Document {
   createdAt: Date;
 }
 
-export const SessionSchema = SchemaFactory.createForClass(Session);
+export const ChatSchema = SchemaFactory.createForClass(Chat);

@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { CohereClient } from 'cohere-ai';
+import { ChatRoles } from 'src/types';
 
 export type chatHistoryItemProps = {
-  role: string;
+  role: ChatRoles;
   message: string;
 };
 
 export interface ILlmService {
-  chat(data: { message: string; chatHistory }): Promise<string>;
+  generateResponse(data: {
+    message: string;
+    chatHistory: chatHistoryItemProps[];
+  }): Promise<string>;
 }
 
 @Injectable()
@@ -21,7 +25,10 @@ export class LlmService implements ILlmService {
     });
   }
 
-  async chat(data: { message: string; chatHistory }): Promise<string> {
+  async generateResponse(data: {
+    message: string;
+    chatHistory: chatHistoryItemProps[];
+  }): Promise<string> {
     const response = await this.llmService.chat({
       model: this.model,
       ...data,

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { JWTPayload } from 'src/types';
+import { JWT } from 'src/types';
 
 export interface IAuthService {
-  signJwt(payload: Record<string, string | number>): Promise<JWTPayload>;
+  signJwt(payload: Record<string, string | number>): Promise<JWT>;
 }
 
 /**
@@ -16,9 +16,9 @@ export class AuthService implements IAuthService {
   /**
    * Signs a JWT token with the given payload.
    * @param {Record<string, string | number>} payload
-   * @returns {Promise<JWTPayload>} jwt
+   * @returns {Promise<JWT>} jwt
    */
-  async signJwt(payload: Record<string, string | number>): Promise<JWTPayload> {
+  async signJwt(payload: Record<string, string | number>): Promise<JWT> {
     return { token: await this.jwtService.signAsync(payload) };
   }
 }

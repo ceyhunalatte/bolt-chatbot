@@ -1,7 +1,7 @@
 export type User = {
   name: string;
 };
-export type JWTPayload = {
+export type JWT = {
   token: string;
 };
 export type Session = {

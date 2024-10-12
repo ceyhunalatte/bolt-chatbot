@@ -1,10 +1,10 @@
 import { useApi } from '../../hooks/useApi';
-import { JWTPayload, User } from '../../types';
+import { JWT, User } from '../../types';
 import { useAccessToken } from '../../hooks/useAccessToken';
 
 export type UserLoginResponse = {
   user: User;
-  access: JWTPayload;
+  access: JWT;
 };
 
 export interface IuseAuthApi {

@@ -1,4 +1,4 @@
-import { Session } from 'src/models/session.model';
+import { Chat } from 'src/models/chat.model';
 import { chatHistoryItemProps, LlmService } from 'src/modules/llm/llm.service';
 
 export const questions = [
@@ -16,16 +16,16 @@ export const questions = [
 
 /**
  * ResponseFactory class is responsible for generating responses
- * based on the current session and chat history.
+ * based on the current chat and chat history.
  */
 export class ResponseFactory extends LlmService {
-  private session: Session;
+  private chat: Chat;
   private chatHistory: chatHistoryItemProps[];
 
-  constructor(session: Session, chatHistory: chatHistoryItemProps[]) {
+  constructor(chat: Chat, chatHistory: chatHistoryItemProps[]) {
     super();
 
-    this.session = session;
+    this.chat = chat;
     this.chatHistory = chatHistory.map((item) => ({
       role: item.role,
       message: item.message,
@@ -46,7 +46,7 @@ export class ResponseFactory extends LlmService {
       '---------------------------------------------------------------------------------',
     );
 
-    const response = await this.chat(data);
+    const response = await this.generateResponse(data);
 
     console.log(
       '---------------------------------------------------------------------------------',
@@ -60,14 +60,15 @@ export class ResponseFactory extends LlmService {
   }
 
   private generatePrompt() {
-    const { step } = this.session;
+    const { step } = this.chat;
+
     switch (true) {
       case step === 0:
-        return 'Greet the user and briefly explain that you will ask them questions related to cats and  generate a friendly and slightly varied version of this question: "${questions[this.session.step]}" related to cats.';
+        return `Greet the user and briefly explain that you will ask them questions about cats and generate a friendly and slightly varied version of this question: "${questions[this.chat.step]}" related to cats.`;
       case step + 1 === questions.length:
         return 'Say your farewells to user and tell them something cute about cats.';
       default:
-        return `Respond to user's last message with a small sentence and generate a friendly and slightly varied version of this question: "${questions[this.session.step]}" related to cats.`;
+        return `Respond to user's last message with a small sentence and generate a friendly and slightly varied version of this question: "${questions[this.chat.step]}" related to cats.`;
     }
   }
 }

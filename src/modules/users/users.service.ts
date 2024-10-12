@@ -7,18 +7,16 @@ import { User } from 'src/models/user.model';
 import { UsersRepository } from 'src/modules/users/users.repository';
 import { compareHash, hashValue } from 'src/utils/hash';
 import { AuthService } from '../auth/auth.service';
-import { JWTPayload } from 'src/types';
+import { JWT } from 'src/types';
 import { CreateOrLoginDto } from './dto/createOrLogin.dto';
 
 interface IUsersService {
-  createOrLogin(
-    dto: CreateOrLoginDto,
-  ): Promise<{ user: User; access: JWTPayload }>;
-  create(dto: CreateOrLoginDto): Promise<{ user: User; access: JWTPayload }>;
+  createOrLogin(dto: CreateOrLoginDto): Promise<{ user: User; access: JWT }>;
+  create(dto: CreateOrLoginDto): Promise<{ user: User; access: JWT }>;
   login(
     dto: CreateOrLoginDto,
     user?: User,
-  ): Promise<{ user: User; access: JWTPayload }>;
+  ): Promise<{ user: User; access: JWT }>;
 }
 
 /**
@@ -38,7 +36,7 @@ export class UsersService implements IUsersService {
    */
   async createOrLogin(
     dto: CreateOrLoginDto,
-  ): Promise<{ user: User; access: JWTPayload }> {
+  ): Promise<{ user: User; access: JWT }> {
     const user = await this.usersRepository.findByUsername(dto.username);
     if (user) return await this.login(dto, user);
     else return await this.create(dto);
@@ -49,9 +47,7 @@ export class UsersService implements IUsersService {
    * @param {CreateOrLoginDto} dto
    * @returns {User} user
    */
-  async create(
-    dto: CreateOrLoginDto,
-  ): Promise<{ user: User; access: JWTPayload }> {
+  async create(dto: CreateOrLoginDto): Promise<{ user: User; access: JWT }> {
     const hashedPassword = await hashValue(dto.password);
     const user = await this.usersRepository.create({
       username: dto.username,
@@ -78,7 +74,7 @@ export class UsersService implements IUsersService {
   async login(
     dto: CreateOrLoginDto,
     user?: User,
-  ): Promise<{ user: User; access: JWTPayload }> {
+  ): Promise<{ user: User; access: JWT }> {
     user = user || (await this.usersRepository.findByUsername(dto.username));
     if (!user) throw new NotFoundException('User not found');
 

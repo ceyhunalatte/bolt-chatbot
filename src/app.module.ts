@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from './modules/users/users.module';
-import { SessionsModule } from './modules/sessions/sessions.module';
+import { ChatModule } from './modules/chat/chat.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
@@ -24,7 +24,7 @@ import { join } from 'path';
     AuthModule,
     UsersModule,
     MessagesModule,
-    SessionsModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [],
