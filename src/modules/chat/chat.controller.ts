@@ -17,12 +17,13 @@ import { GetChat } from './dto/getChat';
 import { MessagesService } from '../messages/messages.service';
 import { Message } from 'src/models/message.model';
 import { GetChats } from './dto/getChats';
+import { GetMessages } from '../messages/dto/getMessages';
 
 interface IChatController {
   create: (body: CreateChat) => Promise<Chat>;
   get: (body: GetChat) => Promise<Chat>;
   getMany: (query: GetChats) => Promise<Chat[]>;
-  getMessages: (query: { id: string }) => Promise<Message[]>;
+  getMessages: (query: GetMessages) => Promise<Message[]>;
 }
 
 @UseGuards(AuthGuard)
@@ -50,7 +51,7 @@ export class ChatController implements IChatController {
   }
 
   @Get('/messages')
-  getMessages(@Query() query: { id: string }): Promise<Message[]> {
-    return this.messageService.getMessagesBySessionId(query.id);
+  getMessages(@Query() query: GetMessages): Promise<Message[]> {
+    return this.messageService.getMany(query);
   }
 }

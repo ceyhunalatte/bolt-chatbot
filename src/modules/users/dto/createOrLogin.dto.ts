@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 
-export class CreateOrLoginDto {
+export class AuthUser {
   @IsString()
   @MinLength(3)
   @IsNotEmpty()

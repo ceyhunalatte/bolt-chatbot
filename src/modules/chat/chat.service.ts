@@ -138,7 +138,7 @@ export class ChatService implements IChatService {
     }
 
     return {
-      message: await this.messagesService.createMessage({
+      message: await this.messagesService.create({
         ...data,
         owner: data.user.id,
       }),
@@ -161,7 +161,7 @@ export class ChatService implements IChatService {
         user,
         chat: { status: 'generating' },
       }),
-      this.messagesService.getMessagesBySessionId(chatId),
+      this.messagesService.getMany({ chatId, user }),
     ]);
 
     console.log(
@@ -203,7 +203,7 @@ export class ChatService implements IChatService {
     const shouldFinish = chat.step + 1 >= questions.length;
 
     const [newMessage] = await Promise.all([
-      this.messagesService.createMessage({
+      this.messagesService.create({
         chatId,
         message: response,
         role: ChatRoles.BOT,

@@ -1,7 +1,7 @@
-import { IsString, MinLength } from 'class-validator';
+import { IsString } from 'class-validator';
 import { ChatRoles } from 'src/types';
 
-export class CreateMessageDto {
+export class CreateMessage {
   @IsString()
   chatId: string;
 
@@ -12,5 +12,5 @@ export class CreateMessageDto {
   role: ChatRoles;
 
   @IsString()
-  owner: string;
+  owner: String;
 }

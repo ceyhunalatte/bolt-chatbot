@@ -1,27 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { MessagesRepository } from './messages.repository';
-import { CreateMessageDto } from './dto/createMessage.dto';
+import { CreateMessage } from './dto/createMessage';
 import { Message } from 'src/models/message.model';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { ChatRoles, JWTPayload } from 'src/types';
+import { GetMessages } from './dto/getMessages';
 
 interface IMessagesService {
-  createMessage(dto: CreateMessageDto): Promise<Message>;
-  createMany(dto: CreateMessageDto[]): Promise<Message[]>;
-  getMessagesBySessionId(sessionId: string): Promise<Message[]>;
+  create(dto: CreateMessage): Promise<Message>;
+  createMany(dto: CreateMessage[]): Promise<Message[]>;
+  getMany(dto: GetMessages): Promise<Message[]>;
 }
 
 @Injectable()
 export class MessagesService implements IMessagesService {
-  constructor(private messageRepository: MessagesRepository) {}
+  constructor(
+    @InjectModel(Message.name) private readonly messageModel: Model<Message>,
+  ) {}
 
-  async createMessage(dto: CreateMessageDto): Promise<Message> {
-    return await this.messageRepository.create(dto);
+  async create(dto: CreateMessage): Promise<Message> {
+    return await this.messageModel.create(dto);
   }
 
-  async createMany(dto: CreateMessageDto[]): Promise<Message[]> {
-    return await this.messageRepository.createMany(dto);
+  async createMany(dto: CreateMessage[]): Promise<Message[]> {
+    return await this.messageModel.insertMany(dto);
   }
 
-  async getMessagesBySessionId(sessionId: string): Promise<Message[]> {
-    return await this.messageRepository.getMessagesBySessionId(sessionId);
+  async getMany(dto: GetMessages): Promise<Message[]> {
+    return await this.messageModel.find({
+      owner: dto.user.id,
+      role: { $ne: ChatRoles.SYSTEM },
+    });
   }
 }
